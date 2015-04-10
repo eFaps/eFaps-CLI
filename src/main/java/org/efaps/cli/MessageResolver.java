@@ -43,12 +43,10 @@ public class MessageResolver
 
         String ret;
         if ("command.abbrev.helpdetail".equals(_msg)) {
-            ret ="help";
+            ret = "help";
         } else {
             ret = DefaultMessageResolver.getInstance().resolveGeneralMessage(_msg);
         }
         return ret;
     }
-
-
 }

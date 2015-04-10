@@ -20,8 +20,6 @@ package org.efaps.cli;
 import java.io.IOException;
 
 import de.raysha.lib.jsimpleshell.Shell;
-import de.raysha.lib.jsimpleshell.annotation.Command;
-import de.raysha.lib.jsimpleshell.annotation.Param;
 import de.raysha.lib.jsimpleshell.builder.ShellBuilder;
 
 /**
@@ -29,39 +27,21 @@ import de.raysha.lib.jsimpleshell.builder.ShellBuilder;
  *
  * @author The eFaps Team
  */
-public class Example
+public class StartUp
 {
 
+    /**
+     * @param args
+     */
     public static void main(final String[] args)
         throws IOException
     {
         final Shell shell = ShellBuilder.shell("eFaps")
                         .behavior()
-                        .addHandler(new Example())
+                        .addHandler(ContextHandler.get())
                         .addHandler(new MessageResolver())
                         .build();
         shell.setAppName("\"eFaps Command Line Interface\"");
         shell.commandLoop();
     }
-
-    @Command(abbrev = "add")
-    public Long addition(final Integer... integers)
-    {
-        Long result = 0L;
-        for (final Integer i : integers) {
-            result += i;
-        }
-
-        return result;
-    }
-
-    @Command(name = "division", abbrev = "div")
-    public Double div(
-                      @Param("dividend") final Double a,
-                      @Param("divisor") final Double b)
-    {
-
-        return a / b;
-    }
-
 }
