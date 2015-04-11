@@ -40,6 +40,7 @@ public class StartUp
                         .behavior()
                         .addHandler(ContextHandler.get())
                         .addHandler(new MessageResolver())
+                        .addHandler(new EQLHandler())
                         .build();
         shell.setAppName("\"eFaps Command Line Interface\"");
         shell.commandLoop();
