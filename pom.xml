@@ -39,40 +39,57 @@
                 <executions>
                     <execution>
                         <id>make-packages</id>
-                        <phase>package</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <configuration>
                             <descriptors>
-                                <descriptor>src/main/assembly/assembly-descriptor.xml</descriptor>
+                                <descriptor>assembly.xml</descriptor>
                             </descriptors>
                             <appendAssemblyId>false</appendAssemblyId>
-                            <finalName>JSimpleShell-Demo-${project.version}</finalName>
+                            <finalName>eFaps-CLI-${project.version}</finalName>
                             <outputDirectory>target/</outputDirectory>
                             <workDirectory>target/assembly/work</workDirectory>
                         </configuration>
                     </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>1.10</version>
+                <executions>
                     <execution>
-                        <id>make-assembly</id>
+                        <id>make-assemble</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>assemble</goal>
                         </goals>
-                        <configuration>
-                            <archive>
-                                <manifest>
-                                    <mainClass>org.efaps.cli.StartUp</mainClass>
-                                </manifest>
-                            </archive>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                            <finalName>JSimpleShell-Demo</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <repositoryLayout>flat</repositoryLayout>
+                    <repositoryName>lib</repositoryName>
+                    <configurationDirectory>conf</configurationDirectory>
+                    <logsDirectory>log</logsDirectory>
+                    <copyConfigurationDirectory>true</copyConfigurationDirectory>
+                    <filterConfigurationDirectory>true</filterConfigurationDirectory>
+                    <platforms>
+                        <platform>all</platform>
+                    </platforms>
+                    <programs>
+                        <program>
+                            <mainClass>org.efaps.cli.StartUp</mainClass>
+                            <id>efapscli</id>
+                            <jvmSettings>
+                                <initialMemorySize>20m</initialMemorySize>
+                                <maxMemorySize>256m</maxMemorySize>
+                                <maxStackSize>128m</maxStackSize>
+                            </jvmSettings>
+                        </program>
+                    </programs>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -87,7 +104,7 @@
             <artifactId>commons-lang3</artifactId>
             <version>${commons.lang.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-multipart</artifactId>
             <version>${jersey.version}</version>
