@@ -32,6 +32,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.efaps.cli.utils.CLISettings;
 import org.glassfish.jersey.client.ClientConfig;
@@ -97,14 +98,14 @@ public class RestClient
      *
      * @param _target target to be compiled
      */
-    public void compile(final String _target)
+    public String compile(final String _target)
     {
         init();
         final WebTarget resourceWebTarget = this.webTarget.path("compile");
 
-        resourceWebTarget.queryParam("type", _target).request(MediaType.TEXT_PLAIN_TYPE)
+        final Response ret = resourceWebTarget.queryParam("type", _target).request(MediaType.TEXT_PLAIN_TYPE)
                         .get();
-
+        return ret.getStatusInfo().toString();
     }
 
 

@@ -39,9 +39,9 @@ public class CommandHandler
     private Environment environment;
 
     @Command
-    public void compile(@Param("target") final String _target)
+    public String compile(@Param("target") final String _target)
         throws IOException
     {
-        new RestClient(this.environment).compile(_target);
+        return new RestClient(this.environment).compile(_target);
     }
 }
