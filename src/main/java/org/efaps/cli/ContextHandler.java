@@ -19,6 +19,8 @@ package org.efaps.cli;
 
 import java.io.IOException;
 
+import org.efaps.cli.utils.CLISettings;
+
 import de.raysha.lib.jsimpleshell.Shell;
 import de.raysha.lib.jsimpleshell.annotation.Command;
 import de.raysha.lib.jsimpleshell.annotation.Inject;
@@ -51,9 +53,16 @@ public final class ContextHandler
     public void login(@Param("username") final String _username)
         throws IOException
     {
-        this.owner.getEnvironment().setVariable("username", _username);
+        this.owner.getEnvironment().setVariable(CLISettings.USER, _username);
         final String passwd = this.input.maskedIn('*').withPromt("Enter your password please: ").readLine();
-        this.owner.getEnvironment().setVariable("password", passwd);
+        this.owner.getEnvironment().setVariable(CLISettings.PWD, passwd);
+    }
+
+    @Command
+    public void url(@Param("url") final String _url)
+        throws IOException
+    {
+        this.owner.getEnvironment().setVariable(CLISettings.URL, _url);
     }
 
     public static ContextHandler get()

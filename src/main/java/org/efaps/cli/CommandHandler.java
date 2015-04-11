@@ -15,35 +15,33 @@
  *
  */
 
+
 package org.efaps.cli;
 
 import java.io.IOException;
 
-import de.raysha.lib.jsimpleshell.Shell;
-import de.raysha.lib.jsimpleshell.builder.ShellBuilder;
+import org.efaps.cli.rest.RestClient;
+
+import de.raysha.lib.jsimpleshell.annotation.Command;
+import de.raysha.lib.jsimpleshell.annotation.Inject;
+import de.raysha.lib.jsimpleshell.annotation.Param;
+import de.raysha.lib.jsimpleshell.script.Environment;
+
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
  */
-public class StartUp
+public class CommandHandler
 {
+    @Inject
+    private Environment environment;
 
-    /**
-     * @param args
-     */
-    public static void main(final String[] args)
+    @Command
+    public void compile(@Param("target") final String _target)
         throws IOException
     {
-        final Shell shell = ShellBuilder.shell("eFaps")
-                        .behavior()
-                        .addHandler(ContextHandler.get())
-                        .addHandler(new CommandHandler())
-                        .addHandler(new MessageResolver())
-                        .addHandler(new EQLHandler())
-                        .build();
-        shell.setAppName("\"eFaps Command Line Interface\"");
-        shell.commandLoop();
+        new RestClient(this.environment).compile(_target);
     }
 }
