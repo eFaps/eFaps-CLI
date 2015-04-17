@@ -108,6 +108,20 @@ public class RestClient
         return ret.getStatusInfo().toString();
     }
 
+    /**
+     * Compile the target in the server.
+     *
+     * @param _target target to be compiled
+     */
+    public String update(final String _eql)
+    {
+        init();
+        final WebTarget resourceWebTarget = this.webTarget.path("eql").path("update");
+        final Response ret = resourceWebTarget.queryParam("origin", "eFaps-CLI")
+                        .queryParam("stmt", _eql)
+                        .request(MediaType.TEXT_PLAIN_TYPE, MediaType.APPLICATION_JSON_TYPE).get();
+        return ret.getStatusInfo().toString();
+    }
 
     /**
      * @param _files

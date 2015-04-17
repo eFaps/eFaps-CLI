@@ -23,6 +23,7 @@ import java.util.Collection;
 import jline.console.history.History;
 
 import org.apache.commons.lang3.StringUtils;
+import org.efaps.cli.rest.RestClient;
 
 import de.raysha.lib.jsimpleshell.Shell;
 import de.raysha.lib.jsimpleshell.annotation.Command;
@@ -30,6 +31,7 @@ import de.raysha.lib.jsimpleshell.annotation.Inject;
 import de.raysha.lib.jsimpleshell.annotation.Param;
 import de.raysha.lib.jsimpleshell.io.InputBuilder;
 import de.raysha.lib.jsimpleshell.io.TerminalIO;
+import de.raysha.lib.jsimpleshell.script.Environment;
 
 /**
  * TODO comment!
@@ -40,13 +42,19 @@ public class EQLHandler
 {
     @Inject
     private Shell owner;
+
     @Inject
     private InputBuilder input;
 
+    @Inject
+    private Environment environment;
+
+
     @Command
-    public void update(@Param("StatementParts") final String... _parts)
+    public String update(@Param("StatementParts") final String... _parts)
         throws IOException
     {
+        String ret = null;
         final StringBuilder eql = new StringBuilder().append("update ");
         for (final String part : _parts) {
             eql.append(part).append(" ");
@@ -54,6 +62,7 @@ public class EQLHandler
         while (!StringUtils.endsWithAny(eql, ";", "; ")) {
             eql.append(this.input.in().withPromt("\\").readLine());
         }
+        ret = new RestClient(this.environment).update(eql.toString());
         final Collection<Object> col = this.owner.getSettings().getAuxHandlers().get("!");
         if (!col.isEmpty()) {
             final TerminalIO io = (TerminalIO) col.iterator().next();
@@ -62,5 +71,6 @@ public class EQLHandler
             history.previous();
             history.add(eql);
         }
+        return ret;
     }
 }
