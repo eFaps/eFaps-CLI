@@ -104,6 +104,16 @@
             <artifactId>commons-cli</artifactId>
             <version>1.2</version>
         </dependency>
+         <dependency>
+            <groupId>org.efaps</groupId>
+            <artifactId>efaps-json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda-time.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>

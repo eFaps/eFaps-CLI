@@ -23,6 +23,9 @@ package org.efaps.cli.rest;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +38,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.efaps.cli.utils.CLISettings;
+import org.efaps.json.data.AbstractValue;
+import org.efaps.json.data.DataList;
+import org.efaps.json.data.ObjectData;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 import de.raysha.lib.jsimpleshell.script.Environment;
 
@@ -121,6 +132,49 @@ public class RestClient
                         .queryParam("stmt", _eql)
                         .request(MediaType.TEXT_PLAIN_TYPE, MediaType.APPLICATION_JSON_TYPE).get();
         return ret.getStatusInfo().toString();
+    }
+
+    /**
+     * Compile the target in the server.
+     *
+     * @param _target target to be compiled
+     */
+    public String print(final String _eql)
+    {
+        init();
+        final StringBuilder ret = new StringBuilder();
+        final WebTarget resourceWebTarget = this.webTarget.path("eql").path("print");
+        final Response response = resourceWebTarget.queryParam("origin", "eFaps-CLI")
+                        .queryParam("stmt", _eql)
+                        .request(MediaType.TEXT_PLAIN_TYPE, MediaType.APPLICATION_JSON_TYPE).get();
+
+        if (MediaType.APPLICATION_JSON_TYPE.equals(response.getMediaType())) {
+
+            final BufferedReader br = new BufferedReader(new InputStreamReader(response.readEntity(InputStream.class)));
+
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            mapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
+            mapper.registerModule(new JodaModule());
+
+            DataList tmp;
+            try {
+                tmp = mapper.readValue(br, DataList.class);
+                for (final ObjectData objData : tmp) {
+                    for (final AbstractValue<?> val : objData.getValues()) {
+                        ret.append(val.getKey());
+                        ret.append(val.getValue());
+                    }
+                    ret.append("\n");
+                }
+            } catch (final IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
+            ret.append(response.getStatusInfo().toString());
+        }
+        return ret.toString();
     }
 
     /**

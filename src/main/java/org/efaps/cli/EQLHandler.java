@@ -55,19 +55,42 @@ public class EQLHandler
         throws IOException
     {
         String ret = null;
-        final StringBuilder eql = EQLObserver.get().getEql();
-        while (!StringUtils.endsWithAny(eql, ";", "; ")) {
-            eql.append(this.input.in().withPromt("\\").readLine());
-        }
-        ret = new RestClient(this.environment).update(eql.toString());
+        final String stmt = getStmt();
+        ret = new RestClient(this.environment).update(stmt);
+        history(stmt);
+        return ret;
+    }
+
+    @Command
+    public String print(@Param("StatementParts") final String... _parts)
+        throws IOException
+    {
+        String ret = null;
+        final String stmt = getStmt();
+        ret = new RestClient(this.environment).print(stmt);
+        history(stmt);
+        return ret;
+    }
+
+    protected void history(final String _stmt)
+    {
         final Collection<Object> col = this.owner.getSettings().getAuxHandlers().get("!");
         if (!col.isEmpty()) {
             final TerminalIO io = (TerminalIO) col.iterator().next();
             final History history = io.getConsole().getHistory();
             history.removeLast();
             history.previous();
-            history.add(eql);
+            history.add(_stmt);
         }
-        return ret;
+    }
+
+    protected String getStmt()
+        throws IOException
+    {
+        final StringBuilder eql = EQLObserver.get().getEql();
+        while (!StringUtils.endsWithAny(eql, ";", "; ")) {
+            eql.append(this.input.in().withPromt("\\").readLine());
+        }
+        return eql.toString();
     }
 }
