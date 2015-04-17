@@ -40,6 +40,7 @@ import de.raysha.lib.jsimpleshell.script.Environment;
  */
 public class EQLHandler
 {
+
     @Inject
     private Shell owner;
 
@@ -49,16 +50,12 @@ public class EQLHandler
     @Inject
     private Environment environment;
 
-
     @Command
     public String update(@Param("StatementParts") final String... _parts)
         throws IOException
     {
         String ret = null;
-        final StringBuilder eql = new StringBuilder().append("update ");
-        for (final String part : _parts) {
-            eql.append(part).append(" ");
-        }
+        final StringBuilder eql = EQLObserver.get().getEql();
         while (!StringUtils.endsWithAny(eql, ";", "; ")) {
             eql.append(this.input.in().withPromt("\\").readLine());
         }

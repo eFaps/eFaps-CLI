@@ -75,6 +75,7 @@ public class StartUp
                                 .addHandler(new CommandHandler())
                                 .addHandler(new MessageResolver())
                                 .addHandler(new EQLHandler())
+                                .addHandler(EQLObserver.get())
                                 .build();
                 shell.setAppName("\"eFaps Command Line Interface\"");
 
