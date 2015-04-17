@@ -26,7 +26,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,13 +42,22 @@ import javax.ws.rs.core.Response;
 import org.efaps.cli.utils.CLISettings;
 import org.efaps.json.data.AbstractValue;
 import org.efaps.json.data.DataList;
+import org.efaps.json.data.DateTimeValue;
+import org.efaps.json.data.DecimalValue;
+import org.efaps.json.data.LongValue;
 import org.efaps.json.data.ObjectData;
+import org.efaps.json.data.StringValue;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 
+import com.brsanthu.dataexporter.model.Column;
+import com.brsanthu.dataexporter.model.NumberColumn;
+import com.brsanthu.dataexporter.model.Row;
+import com.brsanthu.dataexporter.model.StringColumn;
+import com.brsanthu.dataexporter.output.texttable.TextTableExporter;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -157,16 +168,48 @@ public class RestClient
             mapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
             mapper.registerModule(new JodaModule());
 
-            DataList tmp;
             try {
-                tmp = mapper.readValue(br, DataList.class);
+                final StringWriter writer = new StringWriter();
+                final TextTableExporter tableWriter = new TextTableExporter(writer);
+
+                final DataList tmp = mapper.readValue(br, DataList.class);
+                final Map<String, Column> key2Column = new LinkedHashMap<>();
                 for (final ObjectData objData : tmp) {
                     for (final AbstractValue<?> val : objData.getValues()) {
-                        ret.append(val.getKey());
-                        ret.append(val.getValue());
+                        int length = 0;
+                        if (key2Column.containsKey(val.getKey())) {
+                            length = String.valueOf(val.getValue()).length() + 2;
+                        } else {
+                            if (val instanceof StringValue) {
+                                key2Column.put(val.getKey(), new StringColumn(val.getKey()));
+                            } else if (val instanceof DateTimeValue) {
+                                key2Column.put(val.getKey(), new StringColumn(val.getKey()));
+                            } else if (val instanceof DecimalValue) {
+                                key2Column.put(val.getKey(), new NumberColumn(val.getKey(), 1, 2));
+                            } else if (val instanceof LongValue) {
+                                key2Column.put(val.getKey(), new NumberColumn(val.getKey(), 1, 0));
+                            } else {
+                                key2Column.put(val.getKey(), new StringColumn(val.getKey()));
+                            }
+                            length = val.getKey().length() > String.valueOf(val.getValue()).length() ? val
+                                            .getKey().length() :
+                                            String.valueOf(val.getValue()).length();
+                        }
+                        if (length > key2Column.get(val.getKey()).getWidth()) {
+                            key2Column.get(val.getKey()).setWidth(length);
+                        }
                     }
-                    ret.append("\n");
                 }
+                tableWriter.addColumns(key2Column.values().toArray(new Column[key2Column.size()]));
+
+                for (final ObjectData objData : tmp) {
+                    final Row row = new Row();
+                    for (final AbstractValue<?> val : objData.getValues()) {
+                        row.addCellValue(val.getValue());
+                    }
+                    tableWriter.addRows(row);
+                }
+                ret.append(writer);
             } catch (final IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

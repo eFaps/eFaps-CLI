@@ -30,6 +30,7 @@ import de.raysha.lib.jsimpleshell.annotation.Command;
 import de.raysha.lib.jsimpleshell.annotation.Inject;
 import de.raysha.lib.jsimpleshell.annotation.Param;
 import de.raysha.lib.jsimpleshell.io.InputBuilder;
+import de.raysha.lib.jsimpleshell.io.OutputBuilder;
 import de.raysha.lib.jsimpleshell.io.TerminalIO;
 import de.raysha.lib.jsimpleshell.script.Environment;
 
@@ -46,6 +47,9 @@ public class EQLHandler
 
     @Inject
     private InputBuilder input;
+
+    @Inject
+    private OutputBuilder output;
 
     @Inject
     private Environment environment;
