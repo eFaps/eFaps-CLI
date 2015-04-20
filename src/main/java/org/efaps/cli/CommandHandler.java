@@ -18,6 +18,7 @@
 
 package org.efaps.cli;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.efaps.cli.rest.RestClient;
@@ -43,5 +44,12 @@ public class CommandHandler
         throws IOException
     {
         return new RestClient(this.environment).compile(_target);
+    }
+
+    @Command
+    public String importCI(@Param("file") final File _file)
+        throws IOException
+    {
+        return "asd";
     }
 }
