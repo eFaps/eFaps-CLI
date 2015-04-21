@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,9 +125,15 @@ public class RestClient
         init();
         final WebTarget resourceWebTarget = this.webTarget.path("compile");
 
-        final Response ret = resourceWebTarget.queryParam("type", _target).request(MediaType.TEXT_PLAIN_TYPE)
+        final Response response = resourceWebTarget.queryParam("type", _target).request(MediaType.TEXT_PLAIN_TYPE)
                         .get();
-        return ret.getStatusInfo().toString();
+        final String ret;
+        if (MediaType.TEXT_PLAIN_TYPE.equals(response.getMediaType())) {
+            ret = response.readEntity(String.class);
+        } else {
+            ret = response.getStatusInfo().toString();
+        }
+        return ret;
     }
 
     /**
@@ -138,11 +144,18 @@ public class RestClient
     public String update(final String _eql)
     {
         init();
+
         final WebTarget resourceWebTarget = this.webTarget.path("eql").path("update");
-        final Response ret = resourceWebTarget.queryParam("origin", "eFaps-CLI")
+        final Response response = resourceWebTarget.queryParam("origin", "eFaps-CLI")
                         .queryParam("stmt", _eql)
                         .request(MediaType.TEXT_PLAIN_TYPE, MediaType.APPLICATION_JSON_TYPE).get();
-        return ret.getStatusInfo().toString();
+        final String ret;
+        if (MediaType.TEXT_PLAIN_TYPE.equals(response.getMediaType())) {
+            ret = response.readEntity(String.class);
+        } else {
+            ret = response.getStatusInfo().toString();
+        }
+        return ret;
     }
 
     /**
@@ -214,6 +227,8 @@ public class RestClient
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+        } else if (MediaType.TEXT_PLAIN_TYPE.equals(response.getMediaType())) {
+            ret.append(response.readEntity(String.class));
         } else {
             ret.append(response.getStatusInfo().toString());
         }
@@ -248,9 +263,11 @@ public class RestClient
             final FileDataBodyPart part = new FileDataBodyPart("eFaps_File", file);
             multiPart.bodyPart(part);
             if (_revFile == null) {
-                /*final String[] info = getFileInformation(file);
-                multiPart.field("eFaps_Revision", info[0]);
-                multiPart.field("eFaps_Date", info[1]);*/
+                /*
+                 * final String[] info = getFileInformation(file);
+                 * multiPart.field("eFaps_Revision", info[0]);
+                 * multiPart.field("eFaps_Date", info[1]);
+                 */
             } else {
                 final String[] info = fileInfo.get(file.getName());
                 if (info == null) {

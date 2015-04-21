@@ -95,6 +95,6 @@ public class EQLHandler
         while (!StringUtils.endsWithAny(eql, ";", "; ")) {
             eql.append(this.input.in().withPromt("\\").readLine());
         }
-        return eql.toString();
+        return StringUtils.removeEnd(StringUtils.strip(eql.toString()), ";");
     }
 }
