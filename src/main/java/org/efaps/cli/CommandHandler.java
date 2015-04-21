@@ -15,11 +15,12 @@
  *
  */
 
-
 package org.efaps.cli;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.efaps.cli.rest.RestClient;
 
@@ -28,7 +29,6 @@ import de.raysha.lib.jsimpleshell.annotation.Inject;
 import de.raysha.lib.jsimpleshell.annotation.Param;
 import de.raysha.lib.jsimpleshell.script.Environment;
 
-
 /**
  * TODO comment!
  *
@@ -36,6 +36,7 @@ import de.raysha.lib.jsimpleshell.script.Environment;
  */
 public class CommandHandler
 {
+
     @Inject
     private Environment environment;
 
@@ -47,9 +48,19 @@ public class CommandHandler
     }
 
     @Command
-    public String importCI(@Param("file") final File _file)
+    public String importCI(@Param("files") final File... _files)
         throws IOException
     {
-        return "asd";
+        final List<File> files = new ArrayList<>();
+        File revFile = null;
+        for (final File file : _files) {
+            if ("_revFile.txt".equals(file.getName())) {
+                revFile = file;
+            } else {
+                files.add(file);
+            }
+        }
+        return new RestClient(this.environment).post(files, revFile);
     }
+
 }
