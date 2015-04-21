@@ -144,11 +144,52 @@ public class RestClient
     public String update(final String _eql)
     {
         init();
-
         final WebTarget resourceWebTarget = this.webTarget.path("eql").path("update");
         final Response response = resourceWebTarget.queryParam("origin", "eFaps-CLI")
                         .queryParam("stmt", _eql)
-                        .request(MediaType.TEXT_PLAIN_TYPE, MediaType.APPLICATION_JSON_TYPE).get();
+                        .request(MediaType.TEXT_PLAIN_TYPE).get();
+        final String ret;
+        if (MediaType.TEXT_PLAIN_TYPE.equals(response.getMediaType())) {
+            ret = response.readEntity(String.class);
+        } else {
+            ret = response.getStatusInfo().toString();
+        }
+        return ret;
+    }
+
+    /**
+     * Compile the target in the server.
+     *
+     * @param _target target to be compiled
+     */
+    public String delete(final String _eql)
+    {
+        init();
+        final WebTarget resourceWebTarget = this.webTarget.path("eql").path("delete");
+        final Response response = resourceWebTarget.queryParam("origin", "eFaps-CLI")
+                        .queryParam("stmt", _eql)
+                        .request(MediaType.TEXT_PLAIN_TYPE).get();
+        final String ret;
+        if (MediaType.TEXT_PLAIN_TYPE.equals(response.getMediaType())) {
+            ret = response.readEntity(String.class);
+        } else {
+            ret = response.getStatusInfo().toString();
+        }
+        return ret;
+    }
+
+    /**
+     * Compile the target in the server.
+     *
+     * @param _target target to be compiled
+     */
+    public String insert(final String _eql)
+    {
+        init();
+        final WebTarget resourceWebTarget = this.webTarget.path("eql").path("insert");
+        final Response response = resourceWebTarget.queryParam("origin", "eFaps-CLI")
+                        .queryParam("stmt", _eql)
+                        .request(MediaType.TEXT_PLAIN_TYPE).get();
         final String ret;
         if (MediaType.TEXT_PLAIN_TYPE.equals(response.getMediaType())) {
             ret = response.readEntity(String.class);

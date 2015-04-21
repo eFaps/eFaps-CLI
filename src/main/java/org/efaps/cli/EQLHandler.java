@@ -61,7 +61,7 @@ public class EQLHandler
         String ret = null;
         final String stmt = getStmt();
         ret = new RestClient(this.environment).update(stmt);
-        history(stmt);
+        history(stmt + ";");
         return ret;
     }
 
@@ -72,9 +72,32 @@ public class EQLHandler
         String ret = null;
         final String stmt = getStmt();
         ret = new RestClient(this.environment).print(stmt);
-        history(stmt);
+        history(stmt + ";");
         return ret;
     }
+
+    @Command
+    public String insert(@Param("StatementParts") final String... _parts)
+        throws IOException
+    {
+        String ret = null;
+        final String stmt = getStmt();
+        ret = new RestClient(this.environment).insert(stmt);
+        history(stmt + ";");
+        return ret;
+    }
+
+    @Command
+    public String delete(@Param("StatementParts") final String... _parts)
+        throws IOException
+    {
+        String ret = null;
+        final String stmt = getStmt();
+        ret = new RestClient(this.environment).delete(stmt);
+        history(stmt + ";");
+        return ret;
+    }
+
 
     protected void history(final String _stmt)
     {
@@ -92,7 +115,7 @@ public class EQLHandler
         throws IOException
     {
         final StringBuilder eql = EQLObserver.get().getEql();
-        while (!StringUtils.endsWithAny(eql, ";", "; ")) {
+        while (!StringUtils.endsWithAny(eql, ";", "; ", ";  ", ";   ")) {
             eql.append(this.input.in().withPromt("\\").readLine());
         }
         return StringUtils.removeEnd(StringUtils.strip(eql.toString()), ";");
