@@ -23,6 +23,7 @@ package org.efaps.cli.rest;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,6 +58,7 @@ import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.efaps.cli.utils.CLISettings;
+import org.efaps.cli.utils.ExportFormat;
 import org.efaps.json.data.AbstractValue;
 import org.efaps.json.data.DataList;
 import org.efaps.json.data.DateTimeValue;
@@ -72,10 +74,12 @@ import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import com.brsanthu.dataexporter.DataExporter;
 import com.brsanthu.dataexporter.model.Column;
 import com.brsanthu.dataexporter.model.NumberColumn;
 import com.brsanthu.dataexporter.model.Row;
 import com.brsanthu.dataexporter.model.StringColumn;
+import com.brsanthu.dataexporter.output.csv.CsvExporter;
 import com.brsanthu.dataexporter.output.texttable.TextTableExporter;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -223,7 +227,8 @@ public class RestClient
      *
      * @param _target target to be compiled
      */
-    public String print(final String _eql)
+    public String print(final String _eql,
+                        final ExportFormat _exportFormat)
     {
         init();
         final StringBuilder ret = new StringBuilder();
@@ -242,8 +247,18 @@ public class RestClient
             mapper.registerModule(new JodaModule());
 
             try {
-                final StringWriter writer = new StringWriter();
-                final TextTableExporter tableWriter = new TextTableExporter(writer);
+                StringWriter writer = null;
+                DataExporter tableWriter;
+                switch (_exportFormat) {
+                    case CSV:
+                        final FileOutputStream out = new FileOutputStream("export.csv");
+                        tableWriter = new CsvExporter(out);
+                        break;
+                    default:
+                        writer = new StringWriter();
+                        tableWriter = new TextTableExporter(writer);
+                        break;
+                }
 
                 final DataList tmp = mapper.readValue(br, DataList.class);
                 final Map<String, Column> key2Column = new LinkedHashMap<>();
@@ -282,7 +297,9 @@ public class RestClient
                     }
                     tableWriter.addRows(row);
                 }
-                ret.append(writer);
+                if (writer != null) {
+                    ret.append(writer);
+                }
             } catch (final IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

@@ -19,7 +19,9 @@ package org.efaps.cli;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.efaps.cli.utils.CLISettings;
+import org.efaps.cli.utils.ExportFormat;
 
 import de.raysha.lib.jsimpleshell.Shell;
 import de.raysha.lib.jsimpleshell.annotation.Command;
@@ -63,6 +65,18 @@ public final class ContextHandler
         throws IOException
     {
         this.owner.getEnvironment().setVariable(CLISettings.URL, _url);
+    }
+
+    @Command
+    public void exportFormat(@Param("format") final String _format)
+        throws IOException
+    {
+        final ExportFormat format = EnumUtils.getEnum(ExportFormat.class, _format.toUpperCase());
+        if (format == null) {
+            this.owner.getEnvironment().removeVariable(CLISettings.EXPORTFORMAT);
+        } else {
+            this.owner.getEnvironment().setVariable(CLISettings.EXPORTFORMAT, format);
+        }
     }
 
     public static ContextHandler get()

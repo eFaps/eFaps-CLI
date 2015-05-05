@@ -15,23 +15,17 @@
  *
  */
 
+
 package org.efaps.cli.utils;
+
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
  */
-public interface CLISettings
+public enum ExportFormat
 {
-
-    String BASE = "org.efaps.cli.";
-
-    String USER = CLISettings.BASE + "User";
-
-    String PWD = CLISettings.BASE + "Password";
-
-    String URL = CLISettings.BASE + "Url";
-
-    String EXPORTFORMAT = CLISettings.BASE + "ExportFormat";
+    CSV,
+    CONSOLE;
 }

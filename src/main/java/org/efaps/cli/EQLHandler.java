@@ -24,6 +24,8 @@ import jline.console.history.History;
 
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.cli.rest.RestClient;
+import org.efaps.cli.utils.CLISettings;
+import org.efaps.cli.utils.ExportFormat;
 
 import de.raysha.lib.jsimpleshell.Shell;
 import de.raysha.lib.jsimpleshell.annotation.Command;
@@ -71,7 +73,9 @@ public class EQLHandler
     {
         String ret = null;
         final String stmt = getStmt();
-        ret = new RestClient(this.environment).print(stmt);
+        ret = new RestClient(this.environment).print(stmt, this.environment.existsVariable(CLISettings.EXPORTFORMAT)
+                        ? (ExportFormat) this.environment.getVariable(CLISettings.EXPORTFORMAT).getValue()
+                                        : ExportFormat.CONSOLE);
         history(stmt + ";");
         return ret;
     }
@@ -97,7 +101,6 @@ public class EQLHandler
         history(stmt + ";");
         return ret;
     }
-
 
     protected void history(final String _stmt)
     {
