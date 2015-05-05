@@ -19,7 +19,6 @@ package org.efaps.cli;
 
 import java.io.IOException;
 
-import org.apache.commons.lang3.EnumUtils;
 import org.efaps.cli.utils.CLISettings;
 import org.efaps.cli.utils.ExportFormat;
 
@@ -68,15 +67,10 @@ public final class ContextHandler
     }
 
     @Command
-    public void exportFormat(@Param("format") final String _format)
+    public void exportFormat(@Param("ExportFormat") final ExportFormat _format)
         throws IOException
     {
-        final ExportFormat format = EnumUtils.getEnum(ExportFormat.class, _format.toUpperCase());
-        if (format == null) {
-            this.owner.getEnvironment().removeVariable(CLISettings.EXPORTFORMAT);
-        } else {
-            this.owner.getEnvironment().setVariable(CLISettings.EXPORTFORMAT, format);
-        }
+        this.owner.getEnvironment().setVariable(CLISettings.EXPORTFORMAT, _format);
     }
 
     public static ContextHandler get()
