@@ -249,6 +249,7 @@ public class RestClient
             try {
                 StringWriter writer = null;
                 DataExporter tableWriter;
+                boolean permitNUll = true;
                 switch (_exportFormat) {
                     case CSV:
                         final FileOutputStream out = new FileOutputStream("export.csv");
@@ -257,6 +258,7 @@ public class RestClient
                     default:
                         writer = new StringWriter();
                         tableWriter = new TextTableExporter(writer);
+                        permitNUll = false;
                         break;
                 }
 
@@ -293,7 +295,13 @@ public class RestClient
                 for (final ObjectData objData : tmp) {
                     final Row row = new Row();
                     for (final AbstractValue<?> val : objData.getValues()) {
-                        row.addCellValue(val.getValue());
+                        Object value = val.getValue();
+                        if (!permitNUll) {
+                            if (value instanceof String && ((String) value).isEmpty()) {
+                                value = " ";
+                            }
+                        }
+                        row.addCellValue(value);
                     }
                     tableWriter.addRows(row);
                 }
