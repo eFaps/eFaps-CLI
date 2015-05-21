@@ -254,6 +254,7 @@ public class RestClient
                     case CSV:
                         final FileOutputStream out = new FileOutputStream("export.csv");
                         tableWriter = new CsvExporter(out);
+                        ret.append("Exported to CSV.");
                         break;
                     default:
                         writer = new StringWriter();
