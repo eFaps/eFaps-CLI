@@ -135,9 +135,9 @@
             <version>${jersey.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.brsanthu</groupId>
+            <groupId>org.efaps</groupId>
             <artifactId>data-exporter</artifactId>
-            <version>1.0.4</version>
+            <version>${efaps.dataexporter.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-api</artifactId>
