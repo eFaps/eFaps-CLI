@@ -43,6 +43,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.Constants;
@@ -232,9 +233,12 @@ public class RestClient
      * @param _target target to be compiled
      */
     public String print(final String _eql,
-                        final ExportFormat _exportFormat)
+                        final ExportFormat _exportFormat,
+                        final String _fileName)
     {
         init();
+        final String fileName = StringUtils.isEmpty(_fileName) ? "export" : _fileName;
+
         final StringBuilder ret = new StringBuilder();
         final WebTarget resourceWebTarget = this.webTarget.path("eql").path("print");
         final Response response = resourceWebTarget.queryParam("origin", "eFaps-CLI")
@@ -258,15 +262,15 @@ public class RestClient
                 boolean permitNUll = true;
                 switch (_exportFormat) {
                     case CSV:
-                        tableWriter = new CsvExporter(new FileOutputStream("export.csv"));
+                        tableWriter = new CsvExporter(new FileOutputStream(fileName + ".csv"));
                         ret.append("Exported to CSV.");
                         break;
                     case TXT:
-                        tableWriter = new TextExporter(new FileOutputStream("export.txt"));
+                        tableWriter = new TextExporter(new FileOutputStream(fileName + ".txt"));
                         ret.append("Exported to txt.");
                         break;
                     case XML:
-                        tableWriter = new XmlExporter(new FileOutputStream("export.xml"));
+                        tableWriter = new XmlExporter(new FileOutputStream(fileName + ".xml"));
                         ret.append("Exported to xml.");
                         break;
                     default:

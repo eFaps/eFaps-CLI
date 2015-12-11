@@ -25,13 +25,21 @@ package org.efaps.cli.utils;
 public interface CLISettings
 {
 
+    /** The base. */
     String BASE = "org.efaps.cli.";
 
+    /** The user. */
     String USER = CLISettings.BASE + "User";
 
+    /** The pwd. */
     String PWD = CLISettings.BASE + "Password";
 
+    /** The url. */
     String URL = CLISettings.BASE + "Url";
 
+    /** The exportformat. */
     String EXPORTFORMAT = CLISettings.BASE + "ExportFormat";
+
+    /** The fileName. */
+    String FILENAME = CLISettings.BASE + "FileName";
 }

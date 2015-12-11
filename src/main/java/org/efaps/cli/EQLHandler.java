@@ -20,8 +20,6 @@ package org.efaps.cli;
 import java.io.IOException;
 import java.util.Collection;
 
-import jline.console.history.History;
-
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.cli.rest.RestClient;
 import org.efaps.cli.utils.CLISettings;
@@ -35,6 +33,7 @@ import de.raysha.lib.jsimpleshell.io.InputBuilder;
 import de.raysha.lib.jsimpleshell.io.OutputBuilder;
 import de.raysha.lib.jsimpleshell.io.TerminalIO;
 import de.raysha.lib.jsimpleshell.script.Environment;
+import jline.console.history.History;
 
 /**
  * TODO comment!
@@ -44,18 +43,29 @@ import de.raysha.lib.jsimpleshell.script.Environment;
 public class EQLHandler
 {
 
+    /** The owner. */
     @Inject
     private Shell owner;
 
+    /** The input. */
     @Inject
     private InputBuilder input;
 
+    /** The output. */
     @Inject
     private OutputBuilder output;
 
+    /** The environment. */
     @Inject
     private Environment environment;
 
+    /**
+     * Update.
+     *
+     * @param _parts the parts
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Command
     public String update(@Param("StatementParts") final String... _parts)
         throws IOException
@@ -67,6 +77,13 @@ public class EQLHandler
         return ret;
     }
 
+    /**
+     * Prints the.
+     *
+     * @param _parts the parts
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Command
     public String print(@Param("StatementParts") final String... _parts)
         throws IOException
@@ -75,11 +92,19 @@ public class EQLHandler
         final String stmt = getStmt();
         ret = new RestClient(this.environment).print(stmt, this.environment.existsVariable(CLISettings.EXPORTFORMAT)
                         ? (ExportFormat) this.environment.getVariable(CLISettings.EXPORTFORMAT).getValue()
-                                        : ExportFormat.CONSOLE);
+                                        : ExportFormat.CONSOLE,
+                        (String) this.environment.getVariable(CLISettings.FILENAME).getValue());
         history(stmt + ";");
         return ret;
     }
 
+    /**
+     * Insert.
+     *
+     * @param _parts the parts
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Command
     public String insert(@Param("StatementParts") final String... _parts)
         throws IOException
@@ -91,6 +116,13 @@ public class EQLHandler
         return ret;
     }
 
+    /**
+     * Delete.
+     *
+     * @param _parts the parts
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Command
     public String delete(@Param("StatementParts") final String... _parts)
         throws IOException
@@ -102,6 +134,11 @@ public class EQLHandler
         return ret;
     }
 
+    /**
+     * History.
+     *
+     * @param _stmt the stmt
+     */
     protected void history(final String _stmt)
     {
         final Collection<Object> col = this.owner.getSettings().getAuxHandlers().get("!");
@@ -114,6 +151,12 @@ public class EQLHandler
         }
     }
 
+    /**
+     * Gets the stmt.
+     *
+     * @return the stmt
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     protected String getStmt()
         throws IOException
     {

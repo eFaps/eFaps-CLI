@@ -36,10 +36,14 @@ import de.raysha.lib.jsimpleshell.io.InputBuilder;
 public final class ContextHandler
 {
 
+    /** The context. */
     private static ContextHandler CONTEXT;
 
+    /** The owner. */
     @Inject
     private Shell owner;
+
+    /** The input. */
     @Inject
     private InputBuilder input;
 
@@ -50,6 +54,12 @@ public final class ContextHandler
     {
     }
 
+    /**
+     * Login.
+     *
+     * @param _username the username
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Command
     public void login(@Param("username") final String _username)
         throws IOException
@@ -59,6 +69,12 @@ public final class ContextHandler
         this.owner.getEnvironment().setVariable(CLISettings.PWD, passwd);
     }
 
+    /**
+     * Url.
+     *
+     * @param _url the url
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Command
     public void url(@Param("url") final String _url)
         throws IOException
@@ -66,13 +82,39 @@ public final class ContextHandler
         this.owner.getEnvironment().setVariable(CLISettings.URL, _url);
     }
 
+    /**
+     * Export format.
+     *
+     * @param _format the format
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Command
     public void exportFormat(@Param("ExportFormat") final ExportFormat _format)
         throws IOException
     {
-        this.owner.getEnvironment().setVariable(CLISettings.EXPORTFORMAT, _format);
+        exportFormat(_format, "export");
     }
 
+    /**
+     * Export format.
+     *
+     * @param _format the format
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    @Command
+    public void exportFormat(@Param("ExportFormat") final ExportFormat _format,
+                             @Param("FileName") final String _fileName)
+        throws IOException
+    {
+        this.owner.getEnvironment().setVariable(CLISettings.EXPORTFORMAT, _format);
+        this.owner.getEnvironment().setVariable(CLISettings.FILENAME, _fileName);
+    }
+
+    /**
+     * Gets the.
+     *
+     * @return the context handler
+     */
     public static ContextHandler get()
     {
         if (ContextHandler.CONTEXT == null) {
