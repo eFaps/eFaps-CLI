@@ -61,17 +61,21 @@ import org.efaps.cli.utils.CLISettings;
 import org.efaps.cli.utils.ExportFormat;
 import org.efaps.dataexporter.DataExporter;
 import org.efaps.dataexporter.model.Column;
+import org.efaps.dataexporter.model.LineNumberColumn;
 import org.efaps.dataexporter.model.NumberColumn;
 import org.efaps.dataexporter.model.Row;
 import org.efaps.dataexporter.model.StringColumn;
 import org.efaps.dataexporter.output.csv.CsvExporter;
+import org.efaps.dataexporter.output.text.TextExporter;
 import org.efaps.dataexporter.output.texttable.TextTableExporter;
+import org.efaps.dataexporter.output.xml.XmlExporter;
 import org.efaps.json.data.AbstractValue;
 import org.efaps.json.data.DataList;
 import org.efaps.json.data.DateTimeValue;
 import org.efaps.json.data.DecimalValue;
 import org.efaps.json.data.LongValue;
 import org.efaps.json.data.ObjectData;
+import org.efaps.json.data.StringListValue;
 import org.efaps.json.data.StringValue;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
@@ -247,23 +251,34 @@ public class RestClient
             mapper.registerModule(new JodaModule());
 
             try {
+                final DataList tmp = mapper.readValue(br, DataList.class);
+
                 StringWriter writer = null;
                 DataExporter tableWriter;
                 boolean permitNUll = true;
                 switch (_exportFormat) {
                     case CSV:
-                        final FileOutputStream out = new FileOutputStream("export.csv");
-                        tableWriter = new CsvExporter(out);
+                        tableWriter = new CsvExporter(new FileOutputStream("export.csv"));
                         ret.append("Exported to CSV.");
+                        break;
+                    case TXT:
+                        tableWriter = new TextExporter(new FileOutputStream("export.txt"));
+                        ret.append("Exported to txt.");
+                        break;
+                    case XML:
+                        tableWriter = new XmlExporter(new FileOutputStream("export.xml"));
+                        ret.append("Exported to xml.");
                         break;
                     default:
                         writer = new StringWriter();
                         tableWriter = new TextTableExporter(writer);
+                        final LineNumberColumn lineNumberCol = new LineNumberColumn("", 1);
+                        lineNumberCol.setWidth(lineNumberCol.format(tmp.size()).length());
+                        tableWriter.addColumns(lineNumberCol);
                         permitNUll = false;
                         break;
                 }
 
-                final DataList tmp = mapper.readValue(br, DataList.class);
                 final Map<String, Column> key2Column = new LinkedHashMap<>();
                 for (final ObjectData objData : tmp) {
                     for (final AbstractValue<?> val : objData.getValues()) {
@@ -301,6 +316,19 @@ public class RestClient
                             if (value instanceof String && ((String) value).isEmpty()) {
                                 value = " ";
                             }
+                        }
+                        if (val instanceof StringListValue) {
+                            final StringBuilder bldr = new StringBuilder();
+                            boolean first = true;
+                            for (final String strVal : ((StringListValue) val).getValue()) {
+                                if (first) {
+                                    first = false;
+                                } else {
+                                    bldr.append("\n");
+                                }
+                                bldr.append(strVal);
+                           }
+                           value = bldr.toString();
                         }
                         row.addCellValue(value);
                     }

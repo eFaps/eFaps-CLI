@@ -27,5 +27,7 @@ package org.efaps.cli.utils;
 public enum ExportFormat
 {
     CSV,
-    CONSOLE;
+    CONSOLE,
+    TXT,
+    XML;
 }
