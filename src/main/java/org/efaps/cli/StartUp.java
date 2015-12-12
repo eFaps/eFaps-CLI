@@ -20,12 +20,11 @@ package org.efaps.cli;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.efaps.cli.utils.CLISettings;
@@ -44,24 +43,27 @@ public class StartUp
     /**
      * @param args
      */
-    @SuppressWarnings("static-access")
     public static void main(final String[] args)
         throws IOException
     {
+        final Options options = new Options()
+                        .addOption(Option.builder("l")
+                                        .numberOfArgs(2)
+                                        .desc("set login information")
+                                        .longOpt("login")
+                                        .build())
+                        .addOption(Option.builder("u")
+                                        .numberOfArgs(1)
+                                        .desc("set url")
+                                        .longOpt("url")
+                                        .build())
+                        .addOption(Option.builder("h")
+                                        .desc("print this help- information")
+                                        .longOpt("help")
+                                        .build());
+
+        final CommandLineParser parser = new DefaultParser();
         try {
-            final Options options = new Options()
-                            .addOption(OptionBuilder.hasArgs(2)
-                                            .withDescription("set login information")
-                                            .withLongOpt("login")
-                                            .create("l"))
-                            .addOption(OptionBuilder.hasArgs()
-                                            .withDescription("set url")
-                                            .withLongOpt("url")
-                                            .create("u"))
-                            .addOption(OptionBuilder.withLongOpt("help")
-                                            .withDescription("print this help- information")
-                                            .create("h"));
-            final CommandLineParser parser = new BasicParser();
             final CommandLine cmd = parser.parse(options, args);
 
             if (cmd.hasOption("h")) {
@@ -95,11 +97,8 @@ public class StartUp
                 shell.commandLoop();
             }
         } catch (final ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (final IndexOutOfBoundsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            final HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("eFaps-CLI", options);
         }
     }
 }
