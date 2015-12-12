@@ -111,6 +111,19 @@ public final class ContextHandler
     }
 
     /**
+     * Export format.
+     *
+     * @param _format the format
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    @Command()
+    public void help()
+        throws IOException
+    {
+        this.owner.getPipeline().append("?");
+    }
+
+    /**
      * Gets the.
      *
      * @return the context handler
