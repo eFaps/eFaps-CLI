@@ -69,7 +69,12 @@ import org.efaps.dataexporter.model.StringColumn;
 import org.efaps.dataexporter.output.csv.CsvExporter;
 import org.efaps.dataexporter.output.text.TextExporter;
 import org.efaps.dataexporter.output.texttable.TextTableExporter;
+import org.efaps.dataexporter.output.tree.TreeExporter;
 import org.efaps.dataexporter.output.xml.XmlExporter;
+import org.efaps.json.AbstractEFapsJSON;
+import org.efaps.json.ci.AbstractCI;
+import org.efaps.json.ci.Attribute;
+import org.efaps.json.ci.Type;
 import org.efaps.json.data.AbstractValue;
 import org.efaps.json.data.DataList;
 import org.efaps.json.data.DateTimeValue;
@@ -86,9 +91,7 @@ import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 import de.raysha.lib.jsimpleshell.script.Environment;
@@ -250,93 +253,109 @@ public class RestClient
             final BufferedReader br = new BufferedReader(new InputStreamReader(response.readEntity(InputStream.class)));
 
             final ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            mapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
             mapper.registerModule(new JodaModule());
 
             try {
-                final DataList tmp = mapper.readValue(br, DataList.class);
-
+                final Object obj = mapper.readValue(br, AbstractEFapsJSON.class);
                 StringWriter writer = null;
-                DataExporter tableWriter;
-                boolean permitNUll = true;
-                switch (_exportFormat) {
-                    case CSV:
-                        tableWriter = new CsvExporter(new FileOutputStream(fileName + ".csv"));
-                        ret.append("Exported to CSV.");
-                        break;
-                    case TXT:
-                        tableWriter = new TextExporter(new FileOutputStream(fileName + ".txt"));
-                        ret.append("Exported to txt.");
-                        break;
-                    case XML:
-                        tableWriter = new XmlExporter(new FileOutputStream(fileName + ".xml"));
-                        ret.append("Exported to xml.");
-                        break;
-                    default:
-                        writer = new StringWriter();
-                        tableWriter = new TextTableExporter(writer);
-                        final LineNumberColumn lineNumberCol = new LineNumberColumn("", 1);
-                        lineNumberCol.setWidth(lineNumberCol.format(tmp.size()).length());
-                        tableWriter.addColumns(lineNumberCol);
-                        permitNUll = false;
-                        break;
-                }
+                if (obj instanceof AbstractCI) {
+                    final AbstractCI<?> ciObject = (AbstractCI<?>) obj;
+                    writer = new StringWriter();
+                    final TreeExporter treeWriter = new TreeExporter(writer);
 
-                final Map<String, Column> key2Column = new LinkedHashMap<>();
-                for (final ObjectData objData : tmp) {
-                    for (final AbstractValue<?> val : objData.getValues()) {
-                        int length = 0;
-                        if (key2Column.containsKey(val.getKey())) {
-                            length = String.valueOf(val.getValue()).length() + 2;
-                        } else {
-                            if (val instanceof StringValue) {
-                                key2Column.put(val.getKey(), new StringColumn(val.getKey()));
-                            } else if (val instanceof DateTimeValue) {
-                                key2Column.put(val.getKey(), new StringColumn(val.getKey()));
-                            } else if (val instanceof DecimalValue) {
-                                key2Column.put(val.getKey(), new NumberColumn(val.getKey(), 1, 2));
-                            } else if (val instanceof LongValue) {
-                                key2Column.put(val.getKey(), new NumberColumn(val.getKey(), 1, 0));
+                    final Row root = new Row(ciObject.getName());
+                    root.addChild(new Row("Nature: Type"));
+                    root.addChild(new Row("UUID: " + ciObject.getUUID()));
+                    root.addChild(new Row("ID: " + ciObject.getId()));
+                    final Row attrNode = new Row("Attributes");
+                    root.addChild(attrNode);
+                    for (final Attribute attr : ((Type) ciObject).getAttributes()) {
+                        attrNode.addChild(new Row(attr.getName()));
+                    }
+                    treeWriter.addRows(root);
+                } else if (obj instanceof DataList) {
+                    final DataList tmp  = new DataList();
+
+                    DataExporter tableWriter;
+                    boolean permitNUll = true;
+                    switch (_exportFormat) {
+                        case CSV:
+                            tableWriter = new CsvExporter(new FileOutputStream(fileName + ".csv"));
+                            ret.append("Exported to CSV.");
+                            break;
+                        case TXT:
+                            tableWriter = new TextExporter(new FileOutputStream(fileName + ".txt"));
+                            ret.append("Exported to txt.");
+                            break;
+                        case XML:
+                            tableWriter = new XmlExporter(new FileOutputStream(fileName + ".xml"));
+                            ret.append("Exported to xml.");
+                            break;
+                        default:
+                            writer = new StringWriter();
+                            tableWriter = new TextTableExporter(writer);
+                            final LineNumberColumn lineNumberCol = new LineNumberColumn("", 1);
+                            lineNumberCol.setWidth(lineNumberCol.format(tmp.size()).length());
+                            tableWriter.addColumns(lineNumberCol);
+                            permitNUll = false;
+                            break;
+                    }
+
+                    final Map<String, Column> key2Column = new LinkedHashMap<>();
+                    for (final ObjectData objData : tmp) {
+                        for (final AbstractValue<?> val : objData.getValues()) {
+                            int length = 0;
+                            if (key2Column.containsKey(val.getKey())) {
+                                length = String.valueOf(val.getValue()).length() + 2;
                             } else {
-                                key2Column.put(val.getKey(), new StringColumn(val.getKey()));
-                            }
-                            length = val.getKey().length() > String.valueOf(val.getValue()).length() ? val
-                                            .getKey().length() :
-                                            String.valueOf(val.getValue()).length();
-                        }
-                        if (length > key2Column.get(val.getKey()).getWidth()) {
-                            key2Column.get(val.getKey()).setWidth(length);
-                        }
-                    }
-                }
-                tableWriter.addColumns(key2Column.values().toArray(new Column[key2Column.size()]));
-
-                for (final ObjectData objData : tmp) {
-                    final Row row = new Row();
-                    for (final AbstractValue<?> val : objData.getValues()) {
-                        Object value = val.getValue();
-                        if (!permitNUll) {
-                            if (value instanceof String && ((String) value).isEmpty()) {
-                                value = " ";
-                            }
-                        }
-                        if (val instanceof StringListValue) {
-                            final StringBuilder bldr = new StringBuilder();
-                            boolean first = true;
-                            for (final String strVal : ((StringListValue) val).getValue()) {
-                                if (first) {
-                                    first = false;
+                                if (val instanceof StringValue) {
+                                    key2Column.put(val.getKey(), new StringColumn(val.getKey()));
+                                } else if (val instanceof DateTimeValue) {
+                                    key2Column.put(val.getKey(), new StringColumn(val.getKey()));
+                                } else if (val instanceof DecimalValue) {
+                                    key2Column.put(val.getKey(), new NumberColumn(val.getKey(), 1, 2));
+                                } else if (val instanceof LongValue) {
+                                    key2Column.put(val.getKey(), new NumberColumn(val.getKey(), 1, 0));
                                 } else {
-                                    bldr.append("\n");
+                                    key2Column.put(val.getKey(), new StringColumn(val.getKey()));
                                 }
-                                bldr.append(strVal);
-                           }
-                           value = bldr.toString();
+                                length = val.getKey().length() > String.valueOf(val.getValue()).length() ? val
+                                                .getKey().length() :
+                                                String.valueOf(val.getValue()).length();
+                            }
+                            if (length > key2Column.get(val.getKey()).getWidth()) {
+                                key2Column.get(val.getKey()).setWidth(length);
+                            }
                         }
-                        row.addCellValue(value);
                     }
-                    tableWriter.addRows(row);
+                    tableWriter.addColumns(key2Column.values().toArray(new Column[key2Column.size()]));
+
+                    for (final ObjectData objData : tmp) {
+                        final Row row = new Row();
+                        for (final AbstractValue<?> val : objData.getValues()) {
+                            Object value = val.getValue();
+                            if (!permitNUll) {
+                                if (value instanceof String && ((String) value).isEmpty()) {
+                                    value = " ";
+                                }
+                            }
+                            if (val instanceof StringListValue) {
+                                final StringBuilder bldr = new StringBuilder();
+                                boolean first = true;
+                                for (final String strVal : ((StringListValue) val).getValue()) {
+                                    if (first) {
+                                        first = false;
+                                    } else {
+                                        bldr.append("\n");
+                                    }
+                                    bldr.append(strVal);
+                               }
+                               value = bldr.toString();
+                            }
+                            row.addCellValue(value);
+                        }
+                        tableWriter.addRows(row);
+                    }
                 }
                 if (writer != null) {
                     ret.append(writer);

@@ -93,7 +93,9 @@ public class EQLHandler
         ret = new RestClient(this.environment).print(stmt, this.environment.existsVariable(CLISettings.EXPORTFORMAT)
                         ? (ExportFormat) this.environment.getVariable(CLISettings.EXPORTFORMAT).getValue()
                                         : ExportFormat.CONSOLE,
-                        (String) this.environment.getVariable(CLISettings.FILENAME).getValue());
+                        this.environment.existsVariable(CLISettings.FILENAME)
+                                ? (String) this.environment.getVariable(CLISettings.FILENAME).getValue()
+                                : null);
         history(stmt + ";");
         return ret;
     }
