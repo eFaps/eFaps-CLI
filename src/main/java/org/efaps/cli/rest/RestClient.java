@@ -274,8 +274,7 @@ public class RestClient
                     }
                     treeWriter.addRows(root);
                 } else if (obj instanceof DataList) {
-                    final DataList tmp  = new DataList();
-
+                    final DataList tmp = (DataList) obj;
                     DataExporter tableWriter;
                     boolean permitNUll = true;
                     switch (_exportFormat) {
