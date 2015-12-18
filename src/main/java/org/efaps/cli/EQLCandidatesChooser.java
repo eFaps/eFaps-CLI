@@ -16,9 +16,12 @@
  */
 package org.efaps.cli;
 
+import java.util.Iterator;
 import java.util.List;
 
+import org.efaps.cli.rest.RestClient;
 import org.efaps.eql.ui.contentassist.EQLProposals;
+import org.efaps.eql.ui.contentassist.ICINameProvider;
 
 import de.raysha.lib.jsimpleshell.Shell;
 import de.raysha.lib.jsimpleshell.ShellCommandParamSpec;
@@ -52,6 +55,13 @@ public class EQLCandidatesChooser
     public Candidates chooseCandidates(final ShellCommandParamSpec _paramSpec,
                                        final String _part)
     {
+        if (EQLProposals.getCINameProviders().isEmpty()) {
+            final RestClient restClient = new RestClient(this.shell.getEnvironment());
+            final ICINameProvider provider = restClient.getCINameProvider();
+            if (provider != null) {
+                EQLProposals.registerCINameProviders(provider);
+            }
+        }
         Candidates ret = null;
         if (responsibleFor(_paramSpec)) {
             String txt = "";
@@ -64,6 +74,15 @@ public class EQLCandidatesChooser
                 }
             }
             final List<String> proposals = EQLProposals.getProposalList(txt);
+            if (!_part.isEmpty()) {
+                final Iterator<String> iter = proposals.iterator();
+                while (iter.hasNext()) {
+                    final String val = iter.next();
+                    if (!val.startsWith(_part)) {
+                        iter.remove();
+                    }
+                }
+            }
             ret = new Candidates(proposals, 0);
         }
         return ret;

@@ -31,9 +31,11 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.ws.rs.client.Client;
@@ -71,6 +73,7 @@ import org.efaps.dataexporter.output.text.TextExporter;
 import org.efaps.dataexporter.output.texttable.TextTableExporter;
 import org.efaps.dataexporter.output.tree.TreeExporter;
 import org.efaps.dataexporter.output.xml.XmlExporter;
+import org.efaps.eql.ui.contentassist.ICINameProvider;
 import org.efaps.json.AbstractEFapsJSON;
 import org.efaps.json.ci.AbstractCI;
 import org.efaps.json.ci.Attribute;
@@ -318,9 +321,9 @@ public class RestClient
                                 } else {
                                     key2Column.put(val.getKey(), new StringColumn(val.getKey()));
                                 }
-                                length = val.getKey().length() > String.valueOf(val.getValue()).length() ? val
-                                                .getKey().length() :
-                                                String.valueOf(val.getValue()).length();
+                                length = val.getKey().length() > String.valueOf(val.getValue()).length()
+                                                ? val.getKey().length()
+                                                : String.valueOf(val.getValue()).length();
                             }
                             if (length > key2Column.get(val.getKey()).getWidth()) {
                                 key2Column.get(val.getKey()).setWidth(length);
@@ -348,8 +351,8 @@ public class RestClient
                                         bldr.append("\n");
                                     }
                                     bldr.append(strVal);
-                               }
-                               value = bldr.toString();
+                                }
+                                value = bldr.toString();
                             }
                             row.addCellValue(value);
                         }
@@ -457,7 +460,7 @@ public class RestClient
                 ret[1] = new DateTime().toString();
                 ret[0] = "UNKNOWN";
             }
-        } catch (RevisionSyntaxException | IOException e) {
+        } catch (final RevisionSyntaxException | IOException e) {
             e.printStackTrace();
         }
         return ret;
@@ -479,6 +482,40 @@ public class RestClient
             } else {
                 parent = parent.getParentFile();
             }
+        }
+        return ret;
+    }
+
+    public ICINameProvider getCINameProvider()
+    {
+        ICINameProvider ret = null;
+        try {
+            init();
+            final String eql = "print query type Admin_DataModel_Type select attribute[Name]";
+            final WebTarget resourceWebTarget = this.webTarget.path("eql").path("print");
+            final Response response = resourceWebTarget.queryParam("origin", "eFaps-CLI").queryParam("stmt", eql)
+                            .request(MediaType.TEXT_PLAIN_TYPE, MediaType.APPLICATION_JSON_TYPE).get();
+            final BufferedReader br = new BufferedReader(new InputStreamReader(response.readEntity(InputStream.class)));
+
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JodaModule());
+            final DataList dataList = (DataList) mapper.readValue(br, AbstractEFapsJSON.class);
+            final Set<String> typeNames = new HashSet<>();
+            for (final ObjectData data : dataList) {
+                typeNames.add((String) data.getValues().get(0).getValue());
+            }
+            ret = new ICINameProvider()
+            {
+                @Override
+                public Set<String> getTypeNames()
+                {
+                    return typeNames;
+                }
+            };
+
+        } catch (final IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return ret;
     }
