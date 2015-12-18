@@ -37,13 +37,24 @@ import de.raysha.lib.jsimpleshell.builder.ShellBuilder;
  *
  * @author The eFaps Team
  */
-public class StartUp
+public final class StartUp
 {
 
     /**
-     * @param args
+     * Instantiates a new start up.
      */
-    public static void main(final String[] args)
+    private StartUp()
+    {
+
+    }
+
+    /**
+     * The main method.
+     *
+     * @param _args the arguments
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public static void main(final String[] _args)
         throws IOException
     {
         final Options options = new Options()
@@ -64,7 +75,7 @@ public class StartUp
 
         final CommandLineParser parser = new DefaultParser();
         try {
-            final CommandLine cmd = parser.parse(options, args);
+            final CommandLine cmd = parser.parse(options, _args);
 
             if (cmd.hasOption("h")) {
                 final HelpFormatter formatter = new HelpFormatter();
@@ -78,6 +89,8 @@ public class StartUp
                                 .addHandler(new MessageResolver())
                                 .addHandler(new EQLHandler())
                                 .addHandler(EQLObserver.get())
+                                .addHandler(new EQLCandidatesChooser())
+                                .addHandler(new EQLFilter())
                                 .build();
                 shell.setAppName("\"eFaps Command Line Interface\"");
 

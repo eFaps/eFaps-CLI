@@ -67,7 +67,7 @@ public class EQLHandler
      * @throws IOException Signals that an I/O exception has occurred.
      */
     @Command
-    public String update(@Param("StatementParts") final String... _parts)
+    public String update(@Param(value = "StatementParts", type = "eql") final String... _parts)
         throws IOException
     {
         String ret = null;
@@ -85,7 +85,7 @@ public class EQLHandler
      * @throws IOException Signals that an I/O exception has occurred.
      */
     @Command
-    public String print(@Param("StatementParts") final String... _parts)
+    public String print(@Param(value = "StatementParts", type = "eql") final String... _parts)
         throws IOException
     {
         String ret = null;
@@ -108,7 +108,7 @@ public class EQLHandler
      * @throws IOException Signals that an I/O exception has occurred.
      */
     @Command
-    public String insert(@Param("StatementParts") final String... _parts)
+    public String insert(@Param(value = "StatementParts", type = "eql") final String... _parts)
         throws IOException
     {
         String ret = null;
@@ -126,7 +126,7 @@ public class EQLHandler
      * @throws IOException Signals that an I/O exception has occurred.
      */
     @Command
-    public String delete(@Param("StatementParts") final String... _parts)
+    public String delete(@Param(value = "StatementParts", type = "eql") final String... _parts)
         throws IOException
     {
         String ret = null;

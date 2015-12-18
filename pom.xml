@@ -86,6 +86,11 @@
                                 <initialMemorySize>20m</initialMemorySize>
                                 <maxMemorySize>256m</maxMemorySize>
                                 <maxStackSize>128m</maxStackSize>
+                                <!-- arguments for remote debugging of the CLI
+                                <extraArguments>
+                                    <extraArgument>-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=y</extraArgument>
+                                </extraArguments>
+                                 -->
                             </jvmSettings>
                         </program>
                     </programs>
@@ -109,9 +114,14 @@
             <artifactId>org.eclipse.jgit</artifactId>
             <version>4.1.1.201511131810-r</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>efaps-json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.efaps</groupId>
+            <artifactId>efaps-eql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
