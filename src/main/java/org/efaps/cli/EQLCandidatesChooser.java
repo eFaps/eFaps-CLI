@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.efaps.cli;
 import java.util.Iterator;
 import java.util.List;
 
-import org.efaps.cli.rest.RestClient;
+import org.efaps.cli.rest.CINameProviderCall;
 import org.efaps.eql.ui.contentassist.EQLProposals;
 import org.efaps.eql.ui.contentassist.ICINameProvider;
 
@@ -56,8 +56,8 @@ public class EQLCandidatesChooser
                                        final String _part)
     {
         if (EQLProposals.getCINameProviders().isEmpty()) {
-            final RestClient restClient = new RestClient(this.shell.getEnvironment());
-            final ICINameProvider provider = restClient.getCINameProvider();
+            final CINameProviderCall call = new CINameProviderCall(this.shell.getEnvironment());
+            final ICINameProvider provider = call.execute();
             if (provider != null) {
                 EQLProposals.registerCINameProviders(provider);
             }

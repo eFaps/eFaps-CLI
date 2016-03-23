@@ -22,7 +22,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.efaps.cli.rest.RestClient;
+import org.efaps.cli.rest.CompileCall;
+import org.efaps.cli.rest.ImportCICall;
 
 import de.raysha.lib.jsimpleshell.annotation.Command;
 import de.raysha.lib.jsimpleshell.annotation.Inject;
@@ -37,16 +38,31 @@ import de.raysha.lib.jsimpleshell.script.Environment;
 public class CommandHandler
 {
 
+    /** The environment. */
     @Inject
     private Environment environment;
 
+    /**
+     * Compile.
+     *
+     * @param _target the _target
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Command
     public String compile(@Param("target") final String _target)
         throws IOException
     {
-        return new RestClient(this.environment).compile(_target);
+        return new CompileCall(this.environment).execute(_target);
     }
 
+    /**
+     * Import ci.
+     *
+     * @param _files the _files
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Command
     public String importCI(@Param("files") final File... _files)
         throws IOException
@@ -60,7 +76,7 @@ public class CommandHandler
                 files.add(file);
             }
         }
-        return new RestClient(this.environment).post(files, revFile);
+        return new ImportCICall(this.environment).execute(files, revFile);
     }
 
 }

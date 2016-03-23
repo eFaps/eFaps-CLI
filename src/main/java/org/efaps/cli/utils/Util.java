@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,38 +15,34 @@
  *
  */
 
-package org.efaps.cli;
 
-import java.util.Locale;
+package org.efaps.cli.utils;
 
-import de.raysha.lib.jsimpleshell.handler.impl.AbstractMessageResolver;
-import de.raysha.lib.jsimpleshell.handler.impl.DefaultMessageResolver;
+import java.util.ResourceBundle;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
  */
-public class MessageResolver
-    extends AbstractMessageResolver
+public final class Util
 {
 
-    @Override
-    public boolean supportsLocale(final Locale _locale)
+    /**
+     * Instantiates a new util.
+     */
+    private Util()
     {
-        return true;
     }
 
-    @Override
-    protected String resolveMessage(final String _msg)
+    /**
+     * Gets the bundle.
+     *
+     * @return the bundle
+     */
+    public static ResourceBundle getBundle()
     {
-
-        String ret;
-        if ("command.abbrev.helpdetail".equals(_msg)) {
-            ret = "help";
-        } else {
-            ret = DefaultMessageResolver.getInstance().resolveGeneralMessage(_msg);
-        }
+        final ResourceBundle ret = ResourceBundle.getBundle("CLIBundle");
         return ret;
     }
 }

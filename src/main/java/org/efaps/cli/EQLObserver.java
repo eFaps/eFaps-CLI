@@ -24,12 +24,14 @@ import de.raysha.lib.jsimpleshell.handler.CommandLoopObserver;
  *
  * @author The eFaps Team
  */
-public class EQLObserver
+public final class EQLObserver
     implements CommandLoopObserver
 {
 
+    /** The instance. */
     private static EQLObserver INSTANCE = new EQLObserver();
 
+    /** The eql. */
     private StringBuilder eql = new StringBuilder();
 
     /**
@@ -51,11 +53,17 @@ public class EQLObserver
         this.eql = new StringBuilder();
     }
 
+    /**
+     * This method is called when information about an EQL
+     * which was previously requested using an asynchronous
+     * interface becomes available.
+     *
+     * @return the EQL observer
+     */
     public static EQLObserver get()
     {
         return INSTANCE;
     }
-
 
     /**
      * Getter method for the instance variable {@link #eql}.

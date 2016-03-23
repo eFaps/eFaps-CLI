@@ -99,6 +99,7 @@ public final class ContextHandler
      * Export format.
      *
      * @param _format the format
+     * @param _fileName the _file name
      * @throws IOException Signals that an I/O exception has occurred.
      */
     @Command
@@ -113,10 +114,9 @@ public final class ContextHandler
     /**
      * Export format.
      *
-     * @param _format the format
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    @Command()
+    @Command
     public void help()
         throws IOException
     {

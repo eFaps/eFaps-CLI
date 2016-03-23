@@ -21,7 +21,10 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
-import org.efaps.cli.rest.RestClient;
+import org.efaps.cli.rest.DeleteCall;
+import org.efaps.cli.rest.InsertCall;
+import org.efaps.cli.rest.PrintCall;
+import org.efaps.cli.rest.UpdateCall;
 import org.efaps.cli.utils.CLISettings;
 import org.efaps.cli.utils.ExportFormat;
 
@@ -72,7 +75,7 @@ public class EQLHandler
     {
         String ret = null;
         final String stmt = getStmt();
-        ret = new RestClient(this.environment).update(stmt);
+        ret = new UpdateCall(this.environment).execute(stmt);
         history(stmt + ";");
         return ret;
     }
@@ -90,7 +93,7 @@ public class EQLHandler
     {
         String ret = null;
         final String stmt = getStmt();
-        ret = new RestClient(this.environment).print(stmt, this.environment.existsVariable(CLISettings.EXPORTFORMAT)
+        ret = new PrintCall(this.environment).execute(stmt, this.environment.existsVariable(CLISettings.EXPORTFORMAT)
                         ? (ExportFormat) this.environment.getVariable(CLISettings.EXPORTFORMAT).getValue()
                                         : ExportFormat.CONSOLE,
                         this.environment.existsVariable(CLISettings.FILENAME)
@@ -113,7 +116,7 @@ public class EQLHandler
     {
         String ret = null;
         final String stmt = getStmt();
-        ret = new RestClient(this.environment).insert(stmt);
+        ret = new InsertCall(this.environment).execute(stmt);
         history(stmt + ";");
         return ret;
     }
@@ -131,7 +134,7 @@ public class EQLHandler
     {
         String ret = null;
         final String stmt = getStmt();
-        ret = new RestClient(this.environment).delete(stmt);
+        ret = new DeleteCall(this.environment).execute(stmt);
         history(stmt + ";");
         return ret;
     }
