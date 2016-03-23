@@ -31,6 +31,7 @@ import org.efaps.cli.utils.CLISettings;
 
 import de.raysha.lib.jsimpleshell.Shell;
 import de.raysha.lib.jsimpleshell.builder.ShellBuilder;
+import de.raysha.lib.jsimpleshell.exception.CLIException;
 
 /**
  * TODO comment!
@@ -107,9 +108,13 @@ public final class StartUp
                             break;
                     }
                 }
+                shell.processLine("company " + ContextHandler.FAKECOMPANY);
                 shell.commandLoop();
             }
         } catch (final ParseException e) {
+            final HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("eFaps-CLI", options);
+        } catch (final CLIException e) {
             final HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("eFaps-CLI", options);
         }

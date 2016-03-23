@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ package org.efaps.cli.utils;
  */
 public interface CLISettings
 {
-
     /** The base. */
     String BASE = "org.efaps.cli.";
 
@@ -42,4 +41,7 @@ public interface CLISettings
 
     /** The fileName. */
     String FILENAME = CLISettings.BASE + "FileName";
+
+    /** The company. */
+    String COMPANY = CLISettings.BASE + "Company";
 }
