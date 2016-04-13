@@ -33,6 +33,8 @@ import org.efaps.json.reply.ErrorReply;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.raysha.lib.jsimpleshell.script.Environment;
 
@@ -43,6 +45,9 @@ import de.raysha.lib.jsimpleshell.script.Environment;
  */
 public abstract class AbstractCall
 {
+    /** The Constant LOG. */
+    private final static Logger LOG = LoggerFactory.getLogger(AbstractCall.class);
+
     /**
      * Client that makes the actual connection.
      */
@@ -99,6 +104,7 @@ public abstract class AbstractCall
                     this.webTarget = this.webTarget.path(path);
                 }
             }
+            LOG.debug("Initialize call. for {} with {}", this.client, this.webTarget);
             ret = !StringUtils.isEmpty(pwd) && !StringUtils.isEmpty(user) && !StringUtils.isEmpty(url);
         }
         return ret;

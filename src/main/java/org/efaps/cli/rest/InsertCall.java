@@ -23,6 +23,8 @@ import javax.ws.rs.core.Response;
 
 import org.efaps.cli.utils.Util;
 import org.efaps.json.reply.InsertEQLReply;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.raysha.lib.jsimpleshell.script.Environment;
 
@@ -34,6 +36,8 @@ import de.raysha.lib.jsimpleshell.script.Environment;
 public class InsertCall
     extends AbstractModifyCall
 {
+    /** The Constant LOG. */
+    private final static Logger LOG = LoggerFactory.getLogger(UpdateCall.class);
 
     /**
      * Instantiates a new update call.
@@ -51,6 +55,7 @@ public class InsertCall
     {
         final StringBuilder ret = new StringBuilder();
         if (_obj instanceof InsertEQLReply) {
+            LOG.debug("Recieved reply {}", _obj);
             ret.append(MessageFormat.format(Util.getBundle().getString(InsertCall.class.getName() + ".Reply"),
                             _response.getStatusInfo(), ((InsertEQLReply) _obj).getModified(),
                             ((InsertEQLReply) _obj).getInstance()));

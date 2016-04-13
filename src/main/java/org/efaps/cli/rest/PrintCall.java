@@ -56,6 +56,8 @@ import org.efaps.json.data.ObjectData;
 import org.efaps.json.data.StringListValue;
 import org.efaps.json.data.StringValue;
 import org.efaps.json.reply.ErrorReply;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
@@ -70,6 +72,8 @@ import de.raysha.lib.jsimpleshell.script.Environment;
 public class PrintCall
     extends AbstractCall
 {
+    /** The Constant LOG. */
+    private final static Logger LOG = LoggerFactory.getLogger(PrintCall.class);
 
     /**
      * Instantiates a new prints the call.
@@ -101,7 +105,7 @@ public class PrintCall
         final Response response = getWebTarget().queryParam("origin", "eFaps-CLI")
                         .queryParam("stmt", _eql)
                         .request(MediaType.TEXT_PLAIN_TYPE, MediaType.APPLICATION_JSON_TYPE).get();
-
+        LOG.debug("Response: {}", response);
         if (MediaType.APPLICATION_JSON_TYPE.equals(response.getMediaType())) {
 
             final BufferedReader br = new BufferedReader(new InputStreamReader(response.readEntity(InputStream.class)));
@@ -217,8 +221,7 @@ public class PrintCall
                     ret.append(writer);
                 }
             } catch (final IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.error("Catched", e);
             }
         } else if (MediaType.TEXT_PLAIN_TYPE.equals(response.getMediaType())) {
             ret.append(response.readEntity(String.class));
