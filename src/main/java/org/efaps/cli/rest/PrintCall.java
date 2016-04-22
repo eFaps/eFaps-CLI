@@ -73,7 +73,7 @@ public class PrintCall
     extends AbstractCall
 {
     /** The Constant LOG. */
-    private final static Logger LOG = LoggerFactory.getLogger(PrintCall.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PrintCall.class);
 
     /**
      * Instantiates a new prints the call.
@@ -128,12 +128,12 @@ public class PrintCall
                     final Row attrNode = new Row("Attributes");
                     root.addChild(attrNode);
                     for (final Attribute attr : ((Type) ciObject).getAttributes()) {
-                        attrNode.addChild(new Row(attr.getName()));
+                        attrNode.addChild(new Row(attr.getName(), attr.getType().getName(), attr.getType().getInfo()));
                     }
                     treeWriter.addRows(root);
                 } else if (obj instanceof DataList) {
                     final DataList tmp = (DataList) obj;
-                    DataExporter tableWriter;
+                    final DataExporter tableWriter;
                     boolean permitNUll = true;
                     switch (_exportFormat) {
                         case CSV:
