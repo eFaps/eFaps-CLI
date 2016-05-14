@@ -22,18 +22,11 @@
     <parent>
         <groupId>org.efaps</groupId>
         <artifactId>efaps-parent</artifactId>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>8.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>efaps-cli</artifactId>
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>

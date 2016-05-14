@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import java.util.List;
 
 import org.efaps.cli.rest.CompileCall;
 import org.efaps.cli.rest.ImportCICall;
+import org.efaps.cli.rest.SearchCall;
+import org.efaps.cli.utils.CLISettings;
+import org.efaps.cli.utils.ExportFormat;
 
 import de.raysha.lib.jsimpleshell.annotation.Command;
 import de.raysha.lib.jsimpleshell.annotation.Inject;
@@ -79,4 +82,24 @@ public class CommandHandler
         return new ImportCICall(this.environment).execute(files, revFile);
     }
 
+    /**
+     * Search.
+     *
+     * @param _query the _query
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    @Command
+    public String search(@Param("query") final String _query)
+        throws IOException
+    {
+        return new SearchCall(this.environment).execute(_query,
+                        this.environment.existsVariable(CLISettings.EXPORTFORMAT)
+                                        ? (ExportFormat) this.environment.getVariable(CLISettings.EXPORTFORMAT)
+                                                        .getValue()
+                                        : ExportFormat.CONSOLE,
+                        this.environment.existsVariable(CLISettings.FILENAME)
+                                        ? (String) this.environment.getVariable(CLISettings.FILENAME).getValue()
+                                        : null);
+    }
 }
