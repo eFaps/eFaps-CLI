@@ -40,7 +40,7 @@ import org.efaps.dataexporter.output.texttable.TextTableExporter;
 import org.efaps.dataexporter.output.xml.XmlExporter;
 import org.efaps.json.AbstractEFapsJSON;
 import org.efaps.json.index.SearchResult;
-import org.efaps.json.index.SearchResult.Element;
+import org.efaps.json.index.result.Element;
 import org.efaps.json.reply.ErrorReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
