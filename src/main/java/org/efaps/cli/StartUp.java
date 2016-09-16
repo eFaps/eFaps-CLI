@@ -46,7 +46,7 @@ public final class StartUp
 {
 
     /** The Constant LOG. */
-    final static Logger LOG = LoggerFactory.getLogger(StartUp.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StartUp.class);
 
     /**
      * Instantiates a new start up.
