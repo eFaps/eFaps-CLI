@@ -20,8 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.efaps.cli.rest.CINameProviderCall;
-import org.efaps.eql.ui.contentassist.EQLProposals;
-import org.efaps.eql.ui.contentassist.ICINameProvider;
+import org.efaps.eql.ide.contentassist.EQLProposals;
+import org.efaps.eql.ide.contentassist.ICINameProvider;
 
 import de.raysha.lib.jsimpleshell.Shell;
 import de.raysha.lib.jsimpleshell.ShellCommandParamSpec;

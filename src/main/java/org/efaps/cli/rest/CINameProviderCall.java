@@ -28,11 +28,13 @@ import java.util.Set;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.efaps.eql.ui.contentassist.ICINameProvider;
+import org.efaps.eql.ide.contentassist.ICINameProvider;
 import org.efaps.json.AbstractEFapsJSON;
 import org.efaps.json.data.DataList;
 import org.efaps.json.data.ObjectData;
 import org.efaps.json.reply.ErrorReply;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
@@ -47,6 +49,9 @@ import de.raysha.lib.jsimpleshell.script.Environment;
 public class CINameProviderCall
     extends AbstractCall
 {
+
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(CINameProviderCall.class);
 
     /**
      * Instantiates a new CI name provider call.
@@ -93,8 +98,7 @@ public class CINameProviderCall
                 };
             }
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Catched error", e);
         }
         return ret;
     }

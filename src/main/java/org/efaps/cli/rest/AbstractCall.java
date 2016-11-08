@@ -46,7 +46,7 @@ import de.raysha.lib.jsimpleshell.script.Environment;
 public abstract class AbstractCall
 {
     /** The Constant LOG. */
-    private final static Logger LOG = LoggerFactory.getLogger(AbstractCall.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractCall.class);
 
     /**
      * Client that makes the actual connection.

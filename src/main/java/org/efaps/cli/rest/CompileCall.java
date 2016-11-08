@@ -15,7 +15,6 @@
  *
  */
 
-
 package org.efaps.cli.rest;
 
 import javax.ws.rs.core.MediaType;
@@ -28,7 +27,8 @@ import de.raysha.lib.jsimpleshell.script.Environment;
  *
  * @author The eFaps Team
  */
-public class CompileCall extends AbstractCall
+public class CompileCall
+    extends AbstractCall
 {
 
     /**
@@ -40,6 +40,7 @@ public class CompileCall extends AbstractCall
     {
         super(_environment, "compile");
     }
+
     /**
      * Compile the target in the server.
      *
@@ -49,8 +50,7 @@ public class CompileCall extends AbstractCall
     public String execute(final String _target)
     {
         init();
-        final Response response = getWebTarget().queryParam("type", _target).request(MediaType.TEXT_PLAIN_TYPE)
-                        .get();
+        final Response response = getWebTarget().queryParam("type", _target).request(MediaType.TEXT_PLAIN_TYPE).get();
         final String ret;
         if (MediaType.TEXT_PLAIN_TYPE.equals(response.getMediaType())) {
             ret = response.readEntity(String.class);

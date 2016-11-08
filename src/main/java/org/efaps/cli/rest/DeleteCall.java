@@ -37,7 +37,7 @@ public class DeleteCall
     extends AbstractModifyCall
 {
     /** The Constant LOG. */
-    private final static Logger LOG = LoggerFactory.getLogger(DeleteCall.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DeleteCall.class);
 
     /**
      * Instantiates a new update call.
